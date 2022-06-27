@@ -132,6 +132,7 @@ const searchh = async () => {
 i {
   font-size: 3em;
   color: black;
+  cursor: pointer;
 }
 
 .bi-play-fill::before,
