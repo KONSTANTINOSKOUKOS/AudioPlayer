@@ -1,15 +1,18 @@
 <template>
+  <!-- <input placeholder="nvhir0q[ew0]" type="text"> -->
   <audio src=""></audio>
   <form>
     <input v-model="search" type="text" id="search">
-    <button @click.prevent="searchh" type="submit">SEARCH</button>
+    <button placeholder="Βρείτε τραγούδια και playlist με youtube link ή αναζήτηση" @click.prevent="searchh"
+      type="submit"><i class="bi-search"></i></button>
   </form>
 
   <div class="player">
-    <div class="info">
+    <Spinner style="margin-bottom: 40vh;" v-if="loading" />
+    <div v-else class="info">
       <img :src="song.image">
       <h1>{{ song.title }}</h1>
-      <h3 style="text-align: center;">{{ song.author }}</h3>
+      <h3>{{ song.author }}</h3>
     </div>
     <div class="progress">
       <span>{{ currentt }}</span>
@@ -27,6 +30,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import Spinner from './components/Spinner.vue';
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
 
@@ -34,7 +38,7 @@ let audio: HTMLAudioElement;
 let progress: HTMLInputElement;
 const playing = ref(false);
 const currentt = ref('');
-const totalt = ref('');
+// const totalt = ref('');
 const search = ref('');
 const song = ref({
   title: '',
@@ -45,6 +49,7 @@ const song = ref({
     timestamp: ''
   }
 });
+const loading = ref(false);
 
 onMounted(() => {
   audio = document.querySelector('audio') as HTMLAudioElement;
@@ -69,7 +74,7 @@ const loadsong = () => {
     console.log('loaded');
     audio.onloadedmetadata = () => {//loaded song details
       progress.max = Math.round(audio.duration).toString();//max ==duration
-      totalt.value = format(Math.round(audio.duration));//label set to max formatted
+      // totalt.value = format(Math.round(audio.duration));//label set to max formatted
     }
   }
 }
@@ -106,18 +111,19 @@ const format = (time: number) => {
   return `${min}:${sec}`;
 }
 const searchh = async () => {
+  loading.value = true;
   again();
-  toggle();
+  // toggle();
   const newstr = search.value.replace(' ', '%20');
-  const res = await axios.get(`http://localhost:5000/${newstr}`);
-  song.value.author = res.data.author.name;
-  song.value.title = res.data.title;
-  song.value.image = res.data.image;
-  song.value.duration = res.data.duration;
+  search.value = '';
+  const res = await axios.get(`http://localhost:5000/search/${newstr}`);
+  console.log(res.data);
+  song.value = res.data;
+  loading.value = false;
 }
 </script>
 
-<style>
+<style scoped>
 @import './assets/base.css';
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css");
 
@@ -130,9 +136,16 @@ const searchh = async () => {
 }
 
 i {
-  font-size: 3em;
   color: black;
   cursor: pointer;
+}
+
+i:hover {
+  background-color: rgba(0, 0, 0, .05);
+}
+
+.player i {
+  font-size: 3em;
 }
 
 .bi-play-fill::before,
@@ -151,10 +164,12 @@ i {
 
 /* ////////////////////////////////////////////////////////////////////////////////// */
 .player {
+  /* margin-top: calc(100vh - 10em); */
+  /* background: linear-gradient(to top right, #e66465, #9198e5); */
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: end;
   align-items: center;
 }
 
@@ -176,8 +191,28 @@ i {
   width: 75vw;
 }
 
+form {
+  display: flex;
+  justify-content: center;
+  background-color: white;
+  position: fixed;
+  top: 0;
+  z-index: 999;
+  margin: 1rem calc((100vw - 75vw) / 2);
+  border-radius: 100vmax;
+}
+
+form>* {
+  background-color: white;
+  border: 0;
+  outline: 0;
+  margin: .7rem 1rem;
+  font-size: 1.2em;
+}
+
 #search {
   width: 70vw;
+  color: black;
 }
 
 .info {
@@ -190,6 +225,11 @@ img {
   width: 45vw;
 }
 
+h1,
+h3 {
+  text-align: center;
+}
+
 h1 {
   font-size: 2.5em;
 }
@@ -198,25 +238,3 @@ h3 {
   font-size: 1.5em;
 }
 </style>
-
-<!-- SONG RESPONSE{
-    "type": "video",
-    "videoId": "dQw4w9WgXcQ",
-    "url": "https://youtube.com/watch?v=dQw4w9WgXcQ",
-    "title": "Rick Astley - Never Gonna Give You Up (Official Music Video)",
-    "description": "“Never Gonna Give You Up” was a global smash on its release in July 1987, topping the charts in 25 countries including Rick's ...",
-    "image": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hq720.jpg",
-    "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hq720.jpg",
-    "seconds": 213,
-    "timestamp": "3:33",
-    "duration": {
-        "seconds": 213,
-        "timestamp": "3:33"
-    },
-    "ago": "12 years ago",
-    "views": 1238068313,
-    "author": {
-        "name": "Rick Astley",
-        "url": "https://youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw"
-    }
-} -->

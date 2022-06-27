@@ -5,23 +5,27 @@ const app = express();
 
 app.use(cors({ origin: '*' }));
 
+const formatres = (res) => {
+    return {
+        title: res.title,
+        author: res.author.name,
+        image: res.image,
+        duration: {
+            seconds: res.duration.seconds,
+            timestamp: res.duration.timestamp
+        }
+    }
+}
+
 app.get('/search/:id', async (req, res) => {
     const str = req.params.id.replace('%20', ' ');
     const ress = await yts(req.params.id);
-    res.json(ress.videos[0]);
+    res.json(formatres(ress.videos[0]));
 });
 
 app.get('/song/:id', async (req, res) => {
     const ress = await yts({ videoId: req.params.id });
-    res.json({
-        title: ress.title,
-        author: ress.author,
-        image: ress.image,
-        duration: {
-            seconds: ress.duration.seconds,
-            timestamp: ress.duration.timestamp
-        }
-    });
+    res.json(formatres(ress));
 });
 
 app.get('/playlist/:id', async (req, res) => {
@@ -31,15 +35,7 @@ app.get('/playlist/:id', async (req, res) => {
     });
 
     const first = yts({ videoId: links[0] }).then(val => {
-        return {
-            title: val.title,
-            author: val.author,
-            image: val.image,
-            duration: {
-                seconds: val.duration.seconds,
-                timestamp: val.duration.timestamp
-            }
-        };
+        return formatres(val);
     });
     res.json({
         links,
@@ -49,4 +45,4 @@ app.get('/playlist/:id', async (req, res) => {
 
 app.listen(5000, () => {
     console.log('app online');
-})
+});
