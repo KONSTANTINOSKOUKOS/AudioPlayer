@@ -19,7 +19,6 @@
       <input id="progress" :max="song.duration.seconds" value="0" type="range">
       <span>{{ song.duration.timestamp ? song.duration.timestamp : '0:00' }}</span>
     </div>
-
     <div class="controls">
       <i @click="shuffle" class="bi-shuffle"></i>
       <i @click="back" class="bi-skip-start-fill"></i>
@@ -27,6 +26,7 @@
       <i @click="next" class="bi-skip-end-fill"></i>
       <i @click="again" id="rotate" class="bi-arrow-clockwise"></i>
     </div>
+
   </div>
 </template>
 <script setup lang="ts">
@@ -127,7 +127,7 @@ const searchh = async () => {
 
 <style scoped>
 @import './assets/base.css';
-@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css");
+/* @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css"); */
 
 *,
 *::after,
