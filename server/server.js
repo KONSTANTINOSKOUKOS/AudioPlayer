@@ -1,6 +1,8 @@
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const yts = require('yt-search');
+const ytdl = require('ytdl-core');
 const app = express();
 
 app.use(cors({ origin: '*' }));
@@ -19,8 +21,14 @@ const formatres = (res) => {
 
 app.get('/search/:id', async (req, res) => {
     const str = req.params.id.replace('%20', ' ');
-    const ress = await yts(req.params.id);
+    const ress = await yts(str);
+    // res.write(JSON.stringify(formatres(ress.videos[0])));
+    ytdl(ress.videos[0].url, { quality: 'highestaudio' }).pipe(fs.createWriteStream('vid.mp4')).on('finish', () => {
+        console.log('finished');
+        // res.download(__dirname + 'vid.mp4', () => console.log('download'));
+    });
     res.json(formatres(ress.videos[0]));
+    // res.end();
 });
 
 app.get('/song/:id', async (req, res) => {

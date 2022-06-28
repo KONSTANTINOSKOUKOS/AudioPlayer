@@ -80,8 +80,6 @@ const loadsong = () => {
 }
 
 const toggle = () => {
-  console.log(audio?.paused);
-
   if (audio?.paused) {
     audio.play();
     playing.value = true;
@@ -99,6 +97,10 @@ const back = () => {
 const next = () => {
 
 };
+const reset = () => {
+  again();
+  audio.pause();
+}
 const again = () => {
   progress.value = (0).toString();
   audio.currentTime = 0;
@@ -111,9 +113,9 @@ const format = (time: number) => {
   return `${min}:${sec}`;
 }
 const searchh = async () => {
+  if (search.value == '') return;
   loading.value = true;
-  again();
-  // toggle();
+  reset();//now just reset, later add to playlist and continue playing
   const newstr = search.value.replace(' ', '%20');
   search.value = '';
   const res = await axios.get(`http://localhost:5000/search/${newstr}`);
@@ -222,7 +224,7 @@ form>* {
 }
 
 img {
-  width: 45vw;
+  width: 75vw;
 }
 
 h1,
