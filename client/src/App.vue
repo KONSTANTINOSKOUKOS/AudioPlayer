@@ -122,6 +122,7 @@ const searchh = async () => {
   console.log(res.data);
   song.value = res.data;
   loading.value = false;
+  audio.src = 'localhost:5000/audio.mp3';
 }
 </script>
 
