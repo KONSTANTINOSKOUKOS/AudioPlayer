@@ -55,29 +55,18 @@ onMounted(() => {
   audio = document.querySelector('audio') as HTMLAudioElement;
   progress = document.querySelector('#progress') as HTMLInputElement;
   currentt.value = format(Number(progress.value));
-  loadsong();
   setInterval(() => {
     if (playing.value) {
       progress.value = `${Number(progress.value) + 1}`;//progress incrementing
       currentt.value = format(Number(progress.value));//current time set to progress formatted
     }
   }, 1000);
+
   progress.addEventListener('change', () => {
     audio.currentTime = Number(progress.value);//dragged->change
     currentt.value = format(Number(progress.value));//dragged->change audio time
-  })
+  });
 });
-
-const loadsong = () => {
-  if (audio != null) {
-    audio.src = '/Rick Astley - Never Gonna Give You Up (Official Music Video).mp3';
-    console.log('loaded');
-    audio.onloadedmetadata = () => {//loaded song details
-      progress.max = Math.round(audio.duration).toString();//max ==duration
-      // totalt.value = format(Math.round(audio.duration));//label set to max formatted
-    }
-  }
-}
 
 const toggle = () => {
   if (audio?.paused) {
@@ -114,15 +103,19 @@ const format = (time: number) => {
 }
 const searchh = async () => {
   if (search.value == '') return;
+  reset();
+  audio.src = '';//now just reset, later add to playlist and continue playing
   loading.value = true;
-  reset();//now just reset, later add to playlist and continue playing
   const newstr = search.value.replace(' ', '%20');
   search.value = '';
   const res = await axios.get(`http://localhost:5000/search/${newstr}`);
-  console.log(res.data);
   song.value = res.data;
+  progress.max = song.value.duration.seconds.toString();
+  reset();
+  setTimeout(() => {
+    audio.src = `http://localhost:5000/vid.mp4`;
+  }, 3000);
   loading.value = false;
-  audio.src = 'localhost:5000/audio.mp3';
 }
 </script>
 
@@ -225,7 +218,7 @@ form>* {
 }
 
 img {
-  width: 75vw;
+  width: 50vw;
 }
 
 h1,
