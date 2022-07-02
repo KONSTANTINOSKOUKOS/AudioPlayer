@@ -1,5 +1,4 @@
-<template>
-  <!-- <input placeholder="nvhir0q[ew0]" type="text"> -->
+<!-- <template>
   <audio src=""></audio>
   <form>
     <input v-model="search" type="text" id="search">
@@ -59,6 +58,7 @@ onMounted(() => {
     if (playing.value) {
       progress.value = `${Number(progress.value) + 1}`;//progress incrementing
       currentt.value = format(Number(progress.value));//current time set to progress formatted
+      if (progress.value == progress.max) playing.value = false;
     }
   }, 1000);
 
@@ -112,9 +112,7 @@ const searchh = async () => {
   song.value = res.data;
   progress.max = song.value.duration.seconds.toString();
   reset();
-  setTimeout(() => {
-    audio.src = `http://localhost:5000/vid.mp4`;
-  }, 3000);
+  audio.src = `http://localhost:5000/vid.mp4`;
   loading.value = false;
 }
 </script>
@@ -233,4 +231,11 @@ h1 {
 h3 {
   font-size: 1.5em;
 }
-</style>
+</style> -->
+
+<template>
+  <MiniPlayer />
+</template>
+<script lang="ts" setup>
+import MiniPlayer from './components/MiniPlayer.vue';
+</script>

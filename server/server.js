@@ -1,14 +1,14 @@
-const fs = require('fs');
+const { createWriteStream, createReadStream, statSync } = require('fs');
+const { Stream } = require('stream')
 const express = require('express');
 const cors = require('cors');
 const yts = require('yt-search');
 const ytdl = require('ytdl-core');
-const { exec } = require('child_process');
 const path = require('path');
 const app = express();
 
 app.use(cors({ origin: '*' }));
-app.use(express.static(path.join(__dirname, 'public'), { immutable: true, cacheControl: true, maxAge: 0 }));
+app.use(express.static(path.join(__dirname, 'public'), { immutable: true, cacheControl: true, maxAge: 0 }));//for no caching
 const formatres = (res) => {
     return {
         title: res.title,
@@ -20,50 +20,32 @@ const formatres = (res) => {
         }
     }
 }
+const stream = new Stream();
 
 app.get('/search/:id', async (req, res) => {
-    //////////////////////DELETE ALPREADY MADE FILES///////////////////////////////
-    // fs.unlink('public/vid.mp4', err => {
-    //     if (err) console.log(err);
-    //     console.log('vid deleted');
-    // });
-    // fs.unlink('public/audio.mp3', err => {
-    //     if (err) console.log(err);
-    //     console.log('audio deleted');
-    // });
-    //////////////////////////////////////MAKE NEW FILES///////////////////////////
     const str = req.params.id.replace('%20', ' ');
     const ress = await yts(str);
     const vid = ress.videos[0];
     console.log('found info');
+    console.log(formatres(vid));
+    res.write(JSON.stringify(formatres(vid)));
 
-    ytdl(vid.url, { quality: 'highestaudio' }).pipe(fs.createWriteStream(`public/vid.mp4`)).on('finish', () => {
+    ytdl(vid.url, { quality: 'highestaudio' }).pipe(createWriteStream(`public/vid.mp4`)).on('finish', () => {
         console.log('found video');
-        // exec(`ffmpeg -i public/vid.mp4 -vn -ar 44100 -ac 2 -ab 192k -f mp3 public/audio.mp3`, (err, out, stderr) => {
-        //     console.log(err, out, stderr);
-        // }).on('close', (code, signal) => {
-        //     console.log('finished ffmpeg ', code, signal);
-        // });
         console.log(`finished ${vid.title}`);
-        res.json(formatres(vid));
+        res.end();
     });
+    ytdl(vid.url, { quality: 'highestaudio' }).pipe(stream);
 });
 
 app.get('/data', (req, res) => {
-    // res.writeHead(200, {
-    //     'Accept-Ranges': 'bytes',
-    //     'Content-Length': fs.statSync('public/vid.mp4').size,
-    //     'Content-Type': 'video/mp4',
-    // });
-    const stream = fs.createReadStream('public/vid.mp4');
-    stream
-        // .pipe(res)
-        .on('data', chunk => {
-            res.write(chunk);
-        })
-        .on('end', () => {
-            res.end();
-        });
+    res.writeHead(200, {
+        'Accept-Ranges': 'bytes',
+        'Content-Length': statSync('public/vid.mp4').size,
+        'Content-Type': 'video/mp4',
+    });
+    const stream = createReadStream('public/vid.mp4');
+    stream.pipe(res);
 })
 app.get('/song/:id', async (req, res) => {
     const ress = await yts({ videoId: req.params.id });
@@ -88,3 +70,9 @@ app.get('/playlist/:id', async (req, res) => {
 app.listen(5000, () => {
     console.log('app online');
 });
+
+    // exec(`ffmpeg -i public/vid.mp4 -vn -ar 44100 -ac 2 -ab 192k -f mp3 public/audio.mp3`, (err, out, stderr) => {
+    //     console.log(err, out, stderr);
+    // }).on('close', (code, signal) => {
+    //     console.log('finished ffmpeg ', code, signal);
+    // });

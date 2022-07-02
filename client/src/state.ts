@@ -18,32 +18,32 @@ export const state = reactive({
     loading: false
 });
 
-export function toggle(audio: HTMLAudioElement) {
-    if (audio.paused) {
-        audio.play();
+export function toggle() {
+    if (state.audio.paused) {
+        state.audio.play();
         state.playing = true;
     } else {
-        audio.pause();
+        state.audio.pause();
         state.playing = false;
     }
 
 };
 
-export function loadsong(audio: HTMLAudioElement, progress: HTMLInputElement) {
-    if (audio != null) {
-        audio.src = '/Rick Astley - Never Gonna Give You Up (Official Music Video).mp3';
+export function loadsong() {
+    if (state.audio != null) {
+        state.audio.src = '/Rick Astley - Never Gonna Give You Up (Official Music Video).mp3';
         console.log('loaded');
-        audio.onloadedmetadata = () => {//loaded song details
-            progress.max = state.song.duration.seconds.toString();//max ==duration
+        state.audio.onloadedmetadata = () => {//loaded song details
+            state.progress.max = state.song.duration.seconds.toString();//max ==duration
             // totalt.value = format(Math.round(audio.duration));//label set to max formatted
         }
     }
 
 };
 
-export function again(audio: HTMLAudioElement, progress: HTMLInputElement) {
-    progress.value = (0).toString();
-    audio.currentTime = 0;
+export function again() {
+    state.progress.value = (0).toString();
+    state.audio.currentTime = 0;
     state.currenttime = 0;
 
 };
@@ -66,3 +66,7 @@ export function back() {
 export function next() {
 
 };
+export const reset = () => {
+    again();
+    state.audio.pause();
+}
