@@ -17,7 +17,7 @@ export const state = reactive({
     currenttime: 0,
     loading: false
 });
-
+/////////////////////////////////////////////IMPORTANT!!!!!! audio.onmetadataloaded->loading=false;/////////////////////////////////////
 export function toggle() {
     if (state.audio.paused) {
         state.audio.play();
@@ -29,9 +29,15 @@ export function toggle() {
 
 };
 
+export function seek(time: number) {
+    console.log(time);
+    
+    state.audio.currentTime = time;
+}
+
 export function loadsong() {
     if (state.audio != null) {
-        state.audio.src = '/Rick Astley - Never Gonna Give You Up (Official Music Video).mp3';
+        state.audio.src = '/rickroll.mp3';
         console.log('loaded');
         state.audio.onloadedmetadata = () => {//loaded song details
             state.progress.max = state.song.duration.seconds.toString();//max ==duration

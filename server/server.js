@@ -41,10 +41,10 @@ app.get('/search/:id', async (req, res) => {
 app.get('/data', (req, res) => {
     res.writeHead(200, {
         'Accept-Ranges': 'bytes',
-        'Content-Length': statSync('public/vid.mp4').size,
+        'Content-Length': statSync('public/vidd.mp4').size,
         'Content-Type': 'video/mp4',
     });
-    const stream = createReadStream('public/vid.mp4');
+    const stream = createReadStream('public/vidd.mp4');
     stream.pipe(res);
 })
 app.get('/song/:id', async (req, res) => {
