@@ -1,17 +1,20 @@
 import { reactive } from "vue";
 
+interface ISong {
+    title: '',
+    author: '',
+    image: '',
+    duration: {
+        seconds: 0,
+        timestamp: ''
+    }
+};
+
 export const state = reactive({
     audio: {} as HTMLAudioElement,
     progress: {} as HTMLInputElement,
-    song: {
-        title: '',
-        author: '',
-        image: '',
-        duration: {
-            seconds: 0,
-            timestamp: ''
-        }
-    },
+    song: {} as ISong,
+    playlist: [] as ISong[],
     playing: false,
     search: '',
     currenttime: 0,
@@ -26,12 +29,11 @@ export function toggle() {
         state.audio.pause();
         state.playing = false;
     }
-
 };
 
 export function seek(time: number) {
     console.log(time);
-    
+
     state.audio.currentTime = time;
 }
 

@@ -234,8 +234,12 @@ h3 {
 </style> -->
 
 <template>
+  <Playlist />
   <MiniPlayer />
+  <Controls />
 </template>
 <script lang="ts" setup>
 import MiniPlayer from './components/MiniPlayer.vue';
+import Controls from './components/Controls.vue';
+import Playlist from './components/Playlist.vue';
 </script>

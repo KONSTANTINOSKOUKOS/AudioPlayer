@@ -1,34 +1,33 @@
 <template>
     <div class="wrapper">
-        <div class="img"></div>
-        <div class="down">
-            <h4>Never Gonna Give You Up</h4>
-            <p>Rick Astley</p>
+        <div class="info">
+            <div class="img"></div>
+            <div class="down">
+                <h4>Never Gonna Give You Up</h4>
+                <p>Rick Astley</p>
+            </div>
+            <i @click="toggle()" :class="!state.playing ? 'bi-play-fill' : 'bi-pause-fill'">{{ !state.playing ? 'play' :
+                    'pause'
+            }}</i>
         </div>
-        <i @click="toggle()" :class="!state.playing ? 'bi-play-fill' : 'bi-pause-fill'">{{ !state.playing ? 'play' :
-                'pause'
-        }}</i>
-    </div>
-    <div class="progress">
-        <div class="bar"></div>
+        <div class="progress">
+            <div class="bar"></div>
+        </div>
     </div>
 </template>
 <script lang='ts' setup>
-import { state, toggle, seek, loadsong } from '../state';
+import { state, toggle, seek } from '../state';
 import { onMounted } from 'vue';
 
 let progress: HTMLDivElement;
 let bar: HTMLDivElement;
 
 onMounted(() => {
-    loadsong();
     progress = document.querySelector('.progress') as HTMLDivElement;
     bar = document.querySelector('.bar') as HTMLDivElement;
     let barwidth = 0;
-    bar.style.width = `0%`;
 
     progress.addEventListener('click', e => {
-        seek(233 * Number(bar.style.width.slice(0, -1)) / 100);
 
         const width = Number(getComputedStyle(progress).width.slice(0, -2));
         barwidth = e.clientX - (document.body.clientWidth - Math.round(width)) / 2;
@@ -39,12 +38,12 @@ onMounted(() => {
         barwidth *= 100;
 
         bar.style.width = `${Math.round(barwidth)}%`;
+        seek(223 * Number(bar.style.width.slice(0, -1)) / 100);
     });
 
     setInterval(() => {
-        state.playing = true;
         if (state.playing) {
-            const a = Number(bar.style.width.slice(0, -1)) + 1;
+            const a = Number(bar.style.width.slice(0, -1)) + (100 / 223);
             bar.style.width = a > 100 ? '100%' : `${a}%`;//stop at 100%
         }
 
@@ -54,20 +53,28 @@ onMounted(() => {
 
     //FOR KEEPING SAME ASPECT
     window.onresize = (e) => {
-        bar.style.width = `${Math.round(barwidth)}% `;
+        bar.style.width = `${Math.round(barwidth)}%`;
     }
 });
 </script>
 
 <style scoped>
-.wrapper {
-    height: 4rem;
-    max-width: 50vw;
+.wrapper{
+    position: fixed;
+    bottom: 5px;
+    width: 100vw;
     margin: 0 auto;
-    /* border-radius: 10px;
-    border-bottom: 4px solid white; */
-    border-top-right-radius: 10px;
-    border-top-left-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+.info {
+    height: 4rem;
+    min-width: 50vw;
+    margin: 0 auto;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
     background-color: chocolate;
     display: flex;
     justify-content: space-evenly;
@@ -78,7 +85,6 @@ onMounted(() => {
     width: 50vw;
     height: 4px;
     background-color: rgb(194, 97, 29);
-    margin-left: 25vw;
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
     /* overflow: hidden; */
@@ -86,7 +92,7 @@ onMounted(() => {
 
 .bar {
     position: relative;
-    width: 50%;
+    width: 0%;
     /* max-width: 50vw; */
     height: 4px;
     background-color: white;
@@ -103,5 +109,13 @@ onMounted(() => {
     width: 3rem;
     height: 3rem;
     background-color: white;
+}
+
+h4 {
+    font-weight: bold;
+}
+
+i {
+    cursor: pointer;
 }
 </style>
