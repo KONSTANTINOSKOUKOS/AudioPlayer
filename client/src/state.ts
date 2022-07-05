@@ -41,6 +41,7 @@ export function seek(time: number) {
 
 export function loadsong() {
     if (state.audio != null) {
+        // state.audio.src = '/rickrollvid.mp4';
         state.audio.src = '/rickrollvid.mp4';
         console.log('loaded');
         // state.audio.onloadedmetadata = () => {//loaded song details
@@ -78,4 +79,7 @@ export function next() {
 export const reset = () => {
     again();
     state.audio.pause();
+}
+export const remove = (song: ISong) => {
+    state.playlist.splice(state.playlist.indexOf(song), 1);
 }

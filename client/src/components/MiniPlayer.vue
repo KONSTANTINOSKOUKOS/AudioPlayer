@@ -35,11 +35,10 @@ onMounted(() => {
 
             if (barwidth > e.clientX) barwidth = 0;
 
-            barwidth /= Number(getComputedStyle(progress).width.slice(0, -2));
-            barwidth *= 100;
+            barwidth = (barwidth / Number(getComputedStyle(progress).width.slice(0, -2))) * 100;
 
             bar.style.width = `${Math.round(barwidth)}%`;
-            seek(223 * Number(bar.style.width.slice(0, -1)) / 100);
+            seek(state.song.duration.seconds * Number(bar.style.width.slice(0, -1)) / 100);
         });
 
         const interval = setInterval(() => {

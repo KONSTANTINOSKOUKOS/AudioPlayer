@@ -2,11 +2,11 @@
     <div style="overflow:auto;">
         <SearchBar />
         <ul>
-            <li v-for="song in state.playlist">
+            <li v-for="song in state.playlist" :key="Math.random()">
                 <div class="img"></div>
                 <h2 @click="assign(song)">{{ song.title }}</h2>
                 <p>{{ song.author }}</p>
-                <button>❌</button>
+                <button @click="remove(song)">❌</button>
             </li>
         </ul>
         <MiniPlayer v-if="state.hassong" />
@@ -14,7 +14,7 @@
 </template>
 <script lang="ts" setup>
 import { onMounted } from "vue";
-import { state, loadsong } from "../state";
+import { state, loadsong, again, remove } from "../state";
 import MiniPlayer from "./MiniPlayer.vue";
 import SearchBar from "./SearchBar.vue";
 
@@ -48,6 +48,8 @@ const assign = (song: any) => {
     console.log(state.song);
     loadsong();
     state.hassong = true;
+    again();
+
 }
 </script>
 
