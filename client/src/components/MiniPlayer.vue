@@ -1,10 +1,10 @@
 <template>
-    <div class="wrapper">
+    <div v-if="!state.inplayer" class="wrapper">
         <div class="info">
             <div class="img"></div>
-            <div class="down">
-                <h4>Never Gonna Give You Up</h4>
-                <p>Rick Astley</p>
+            <div @click="state.inplayer = true;" class="down">
+                <h4>{{ state.song.title }}</h4>
+                <p>{{ state.song.author }}</p>
             </div>
             <i @click="toggle()" :class="!state.playing ? 'bi-play-fill' : 'bi-pause-fill'">{{ !state.playing ? 'play' :
                     'pause'
@@ -17,49 +17,55 @@
 </template>
 <script lang='ts' setup>
 import { state, toggle, seek } from '../state';
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 
 let progress: HTMLDivElement;
 let bar: HTMLDivElement;
-
+let barwidth = 0;
 onMounted(() => {
+    console.log('mounted');
     progress = document.querySelector('.progress') as HTMLDivElement;
     bar = document.querySelector('.bar') as HTMLDivElement;
-    let barwidth = 0;
+    if (state.hassong) {
+        bar.style.width = `0.000001%`;
 
-    progress.addEventListener('click', e => {
+        progress.addEventListener('click', e => {
+            const width = Number(getComputedStyle(progress).width.slice(0, -2));
+            barwidth = e.clientX - (document.body.clientWidth - Math.round(width)) / 2;
 
-        const width = Number(getComputedStyle(progress).width.slice(0, -2));
-        barwidth = e.clientX - (document.body.clientWidth - Math.round(width)) / 2;
+            if (barwidth > e.clientX) barwidth = 0;
 
-        if (barwidth > e.clientX) barwidth = 0;
+            barwidth /= Number(getComputedStyle(progress).width.slice(0, -2));
+            barwidth *= 100;
 
-        barwidth /= Number(getComputedStyle(progress).width.slice(0, -2));
-        barwidth *= 100;
+            bar.style.width = `${Math.round(barwidth)}%`;
+            seek(223 * Number(bar.style.width.slice(0, -1)) / 100);
+        });
 
-        bar.style.width = `${Math.round(barwidth)}%`;
-        seek(223 * Number(bar.style.width.slice(0, -1)) / 100);
-    });
+        const interval = setInterval(() => {
+            console.log('interval');
+            if (state.playing) {
+                const a = Number(bar.style.width.slice(0, -1)) + (100 / state.song.duration.seconds);
+                bar.style.width = a > 100 ? '100%' : `${a}%`;//stop at 100%
+            }
+            if (bar.style.width == '100%')
+                bar.style.borderBottomRightRadius = '10px';//for styling symmetry
+        }, 1000);
 
-    setInterval(() => {
-        if (state.playing) {
-            const a = Number(bar.style.width.slice(0, -1)) + (100 / 223);
-            bar.style.width = a > 100 ? '100%' : `${a}%`;//stop at 100%
+        onUnmounted(() => clearInterval(interval));
+        //FOR KEEPING SAME ASPECT
+        window.onresize = (e) => {
+            bar.style.width = `${Math.round(barwidth)}%`;
         }
-
-        if (bar.style.width == '100%')
-            bar.style.borderBottomRightRadius = '10px';//for styling symmetry
-    }, 1000);
-
-    //FOR KEEPING SAME ASPECT
-    window.onresize = (e) => {
-        bar.style.width = `${Math.round(barwidth)}%`;
+        if (!state.inplayer)
+            bar.style.width = `${(state.audio.currentTime / state.song.duration.seconds) * 100}%`;
     }
 });
+
 </script>
 
 <style scoped>
-.wrapper{
+.wrapper {
     position: fixed;
     bottom: 5px;
     width: 100vw;
@@ -67,8 +73,8 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    cursor: pointer;
 }
+
 .info {
     height: 4rem;
     min-width: 50vw;
@@ -93,22 +99,21 @@ onMounted(() => {
 .bar {
     position: relative;
     width: 0%;
-    /* max-width: 50vw; */
     height: 4px;
     background-color: white;
-    /* border-bottom-right-radius: 10px; */
     border-bottom-left-radius: 10px;
 }
 
 .down {
     display: flex;
     flex-direction: column;
+    cursor: pointer;
 }
 
 .img {
     width: 3rem;
     height: 3rem;
-    background-color: white;
+    background-color: blue;
 }
 
 h4 {
@@ -117,5 +122,10 @@ h4 {
 
 i {
     cursor: pointer;
+    z-index: 999;
+}
+
+i:hover {
+    background-color: rgba(0, 0, 0, .1);
 }
 </style>

@@ -1,12 +1,12 @@
 import { reactive } from "vue";
 
 interface ISong {
-    title: '',
-    author: '',
-    image: '',
+    title: string,
+    author: string,
+    image: string,
     duration: {
-        seconds: 0,
-        timestamp: ''
+        seconds: number,
+        timestamp: string
     }
 };
 
@@ -14,11 +14,13 @@ export const state = reactive({
     audio: {} as HTMLAudioElement,
     progress: {} as HTMLInputElement,
     song: {} as ISong,
+    hassong: false,
     playlist: [] as ISong[],
     playing: false,
     search: '',
-    currenttime: 0,
-    loading: false
+    currenttime: '',
+    loading: false,
+    inplayer: false
 });
 /////////////////////////////////////////////IMPORTANT!!!!!! audio.onmetadataloaded->loading=false;/////////////////////////////////////
 export function toggle() {
@@ -39,12 +41,12 @@ export function seek(time: number) {
 
 export function loadsong() {
     if (state.audio != null) {
-        state.audio.src = '/rickroll.mp3';
+        state.audio.src = '/rickrollvid.mp4';
         console.log('loaded');
-        state.audio.onloadedmetadata = () => {//loaded song details
-            state.progress.max = state.song.duration.seconds.toString();//max ==duration
-            // totalt.value = format(Math.round(audio.duration));//label set to max formatted
-        }
+        // state.audio.onloadedmetadata = () => {//loaded song details
+        //     // state.progress.max = state.song.duration.seconds.toString();//max ==duration
+        //     // totalt.value = format(Math.round(audio.duration));//label set to max formatted
+        // }
     }
 
 };
@@ -52,8 +54,7 @@ export function loadsong() {
 export function again() {
     state.progress.value = (0).toString();
     state.audio.currentTime = 0;
-    state.currenttime = 0;
-
+    state.currenttime = '0:00';
 };
 
 export function format(time: number) {

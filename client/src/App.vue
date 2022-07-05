@@ -234,12 +234,17 @@ h3 {
 </style> -->
 
 <template>
-  <Playlist />
-  <MiniPlayer />
-  <Controls />
+  <audio src=""></audio>
+  <Player v-if="state.inplayer" />
+  <Playlist v-else />
 </template>
 <script lang="ts" setup>
-import MiniPlayer from './components/MiniPlayer.vue';
-import Controls from './components/Controls.vue';
+import { onMounted } from 'vue';
+
+import Player from './components/Player.vue';
 import Playlist from './components/Playlist.vue';
+import { state } from "./state";
+onMounted(() => {
+  state.audio = document.querySelector('audio') as HTMLAudioElement;
+});
 </script>
