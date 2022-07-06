@@ -1,13 +1,14 @@
 import { reactive } from "vue";
 
-interface ISong {
+export interface ISong {
     title: string,
     author: string,
     image: string,
     duration: {
         seconds: number,
         timestamp: string
-    }
+    },
+    id:string
 };
 
 export const state = reactive({
@@ -41,7 +42,7 @@ export function seek(time: number) {
 
 export function loadsong() {
     if (state.audio != null) {
-        // state.audio.src = '/rickrollvid.mp4';
+        // state.audio.src = 'http://localhost:5000/vidd.mp4';
         state.audio.src = '/rickrollvid.mp4';
         console.log('loaded');
         // state.audio.onloadedmetadata = () => {//loaded song details

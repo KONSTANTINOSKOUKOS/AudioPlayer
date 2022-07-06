@@ -11,7 +11,7 @@
                 : 'pause'
         }}</i>
         <i @click="next()" class="bi-skip-end-fill">next</i>
-        <i @click="again()" id="rotate" class="bi-arrow-clockwise">again</i>
+        <i @click="again()" class="bi-arrow-clockwise">again</i>
     </div>
 </template>
 <script setup lang="ts">

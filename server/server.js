@@ -19,12 +19,13 @@ const formatres = (res) => {
             seconds: res.duration.seconds,
             timestamp: res.duration.timestamp
         },
-        url: res.url
+        id: res.videoId
     }
 }
 const stream = new Stream();
 
 app.get('/search/:id', async (req, res) => {
+    console.log('started search');
     const str = req.params.id.replace('%20', ' ');
     const ress = await yts(str);
     const vid = ress.videos[0];
@@ -32,16 +33,6 @@ app.get('/search/:id', async (req, res) => {
     console.log(formatres(vid));
     res.send(formatres(vid));
 });
-
-// app.get('/data', (req, res) => {
-//     res.writeHead(200, {
-//         'Accept-Ranges': 'bytes',
-//         'Content-Length': statSync('public/vidd.mp4').size,
-//         'Content-Type': 'video/mp4',
-//     });
-//     const stream = createReadStream('public/vidd.mp4');
-//     stream.pipe(res);
-// });
 
 app.get('/song/:id', async (req, res) => {
     const ress = await yts({ videoId: req.params.id });

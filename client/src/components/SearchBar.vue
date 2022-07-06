@@ -1,8 +1,8 @@
 <template>
     <form>
-        <input placeholder="Βρείτε τραγούδια και playlist με youtube link ή αναζήτηση" v-model="term" type="text" id="search">
-        <button @click.prevent="searchh"
-            type="submit"><i class="bi-search"></i></button>
+        <input placeholder="Βρείτε τραγούδια και playlist με youtube link ή αναζήτηση" v-model="term" type="text"
+            id="search">
+        <button @click.prevent="searchh" type="submit"><i class="bi-search"></i></button>
     </form>
 </template>
 <script lang='ts' setup>
@@ -13,16 +13,16 @@ const term = ref('');
 
 const searchh = async () => {
     if (term.value == '') return;
-    reset();
-    state.audio.src = '';//now just reset, later add to playlist and continue playing
+    
     state.loading = true;
+
     const newstr = term.value.replace(' ', '%20');
     term.value = '';
+
     const res = await axios.get(`http://localhost:5000/search/${newstr}`);
-    state.song = res.data;
-    state.progress.max = state.song.duration.seconds.toString();
-    reset();
-    state.audio.src = `http://localhost:5000/vid.mp4`;
+    console.log(res.data);
+    state.playlist.push(res.data);
+
     state.loading = false;
 }
 </script>

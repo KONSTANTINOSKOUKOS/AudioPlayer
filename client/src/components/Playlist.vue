@@ -3,9 +3,9 @@
         <SearchBar />
         <ul>
             <li v-for="song in state.playlist" :key="Math.random()">
-                <div class="img"></div>
+                <div @click="assign(song)" class="img"></div>
                 <h2 @click="assign(song)">{{ song.title }}</h2>
-                <p>{{ song.author }}</p>
+                <p @click="assign(song)">{{ song.author }}</p>
                 <button @click="remove(song)">❌</button>
             </li>
         </ul>
@@ -13,8 +13,10 @@
     </div>
 </template>
 <script lang="ts" setup>
+import axios from "axios";
 import { onMounted } from "vue";
-import { state, loadsong, again, remove } from "../state";
+import { state, loadsong, remove, reset } from "../state";
+import type { ISong } from '../state';
 import MiniPlayer from "./MiniPlayer.vue";
 import SearchBar from "./SearchBar.vue";
 
@@ -28,7 +30,8 @@ onMounted(() => {
                 duration: {
                     seconds: 212,
                     timestamp: '3:32'
-                }
+                },
+                id: 'rickroll'
             });
         else
             state.playlist.push({
@@ -38,25 +41,36 @@ onMounted(() => {
                     seconds: 69,
                     timestamp: '1:09'
                 },
-                image: ''
+                image: '',
+                id: 'noice'
             });
     }
 });
 
-const assign = (song: any) => {
+const assign = async (song: ISong) => {
+    reset();
+    state.audio.src = '';
     state.song = song;
     console.log(state.song);
+    axios.get(`http://localhost:5000/convert/${song.id}`).then(() => {
+        state.audio.src = 'localhost:5000/vidd.mp4';
+    });
     loadsong();
     state.hassong = true;
-    again();
-
 }
 </script>
 
 <style scoped>
+ul {
+    padding: 0;
+}
+
 .img {
-    width: 4rem;
-    height: 4rem;
+    margin: .25rem 0;
+    margin-left: 1rem;
+    cursor: pointer;
+    width: 3.5rem;
+    height: 3.5rem;
     background-color: blue;
 }
 
@@ -64,17 +78,19 @@ li {
     list-style-type: none;
     display: flex;
     align-items: center;
-    margin: .5rem 0;
+    margin: .5rem .7rem;
+    background-color: rgba(255, 255, 255, .5);
+    border-radius: 20px;
 }
 
 li:hover {
     background-color: rgba(0, 0, 0, .08);
-    cursor: pointer;
 }
 
 h2,
 p {
     margin: 0 auto;
+    cursor: pointer;
 }
 
 ul {
@@ -87,5 +103,6 @@ button {
     border: 0;
     font-size: 1.5em;
     cursor: pointer;
+    z-index: 9999;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
     <div v-if="!state.inplayer" class="wrapper">
         <div class="info">
-            <div class="img"></div>
+            <div @click="state.inplayer = true;" class="img"></div>
             <div @click="state.inplayer = true;" class="down">
                 <h4>{{ state.song.title }}</h4>
                 <p>{{ state.song.author }}</p>
@@ -22,22 +22,23 @@ import { onMounted, onUnmounted } from 'vue';
 let progress: HTMLDivElement;
 let bar: HTMLDivElement;
 let barwidth = 0;
+
 onMounted(() => {
     console.log('mounted');
     progress = document.querySelector('.progress') as HTMLDivElement;
     bar = document.querySelector('.bar') as HTMLDivElement;
+
     if (state.hassong) {
-        bar.style.width = `0.000001%`;
 
         progress.addEventListener('click', e => {
             const width = Number(getComputedStyle(progress).width.slice(0, -2));
-            barwidth = e.clientX - (document.body.clientWidth - Math.round(width)) / 2;
+            barwidth = e.clientX - (document.body.clientWidth - width) / 2;
 
             if (barwidth > e.clientX) barwidth = 0;
 
             barwidth = (barwidth / Number(getComputedStyle(progress).width.slice(0, -2))) * 100;
 
-            bar.style.width = `${Math.round(barwidth)}%`;
+            bar.style.width = `${barwidth}%`;
             seek(state.song.duration.seconds * Number(bar.style.width.slice(0, -1)) / 100);
         });
 
@@ -54,7 +55,7 @@ onMounted(() => {
         onUnmounted(() => clearInterval(interval));
         //FOR KEEPING SAME ASPECT
         window.onresize = (e) => {
-            bar.style.width = `${Math.round(barwidth)}%`;
+            bar.style.width = `${(state.audio.currentTime / state.song.duration.seconds) * 100}%`;
         }
         if (!state.inplayer)
             bar.style.width = `${(state.audio.currentTime / state.song.duration.seconds) * 100}%`;
@@ -110,6 +111,7 @@ onMounted(() => {
 }
 
 .img {
+    cursor: pointer;
     width: 3rem;
     height: 3rem;
     background-color: blue;
@@ -121,7 +123,7 @@ h4 {
 
 i {
     cursor: pointer;
-    z-index: 999;
+    z-index: 99999999;
 }
 
 i:hover {
