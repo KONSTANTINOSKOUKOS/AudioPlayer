@@ -243,8 +243,11 @@ import { onMounted } from 'vue';
 
 import Player from './components/Player.vue';
 import Playlist from './components/Playlist.vue';
-import { state } from "./state";
+import { next, state } from "./state";
 onMounted(() => {
   state.audio = document.querySelector('audio') as HTMLAudioElement;
+  state.audio.onended = () => {
+    next();
+  }
 });
 </script>

@@ -6,11 +6,15 @@
     </div>
     <div class="controls">
         <i @click="shuffle()" class="bi-shuffle">shuffle</i>
-        <i @click="back()" class="bi-skip-start-fill">back</i>
+        <i @click="back()" class="bi-skip-start-fill">{{ state.playlist.indexOf(state.song) == 0 ?
+                ' no back' : 'back'
+        }}</i>
         <i @click="toggle()" :class="!state.playing ? 'bi-play-fill' : 'bi-pause-fill'">{{ !state.playing ? 'play'
                 : 'pause'
         }}</i>
-        <i @click="next()" class="bi-skip-end-fill">next</i>
+        <i @click="next()" class="bi-skip-end-fill">{{ state.playlist.indexOf(state.song) == state.playlist.length - 1 ?
+                ' no next' : 'next'
+        }}</i>
         <i @click="again()" class="bi-arrow-clockwise">again</i>
     </div>
 </template>

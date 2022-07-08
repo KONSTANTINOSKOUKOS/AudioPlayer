@@ -4,8 +4,8 @@
         <ul>
             <li v-for="song in state.playlist" :key="Math.random()">
                 <div @click="assign(song)" class="img"></div>
-                <h2 @click="assign(song)">{{ song.title }}</h2>
-                <p @click="assign(song)">{{ song.author }}</p>
+                <h2 :class="song == state.song ? 'playing' : ''" @click="assign(song)">{{ song.title }}</h2>
+                <p :class="song == state.song ? 'playing' : ''" @click="assign(song)">{{ song.author }}</p>
                 <button @click="remove(song)">❌</button>
             </li>
         </ul>
@@ -15,7 +15,7 @@
 <script lang="ts" setup>
 import axios from "axios";
 import { onMounted } from "vue";
-import { state, loadsong, remove, reset } from "../state";
+import { state, loadsong, remove, reset, shuffle, toggle } from "../state";
 import type { ISong } from '../state';
 import MiniPlayer from "./MiniPlayer.vue";
 import SearchBar from "./SearchBar.vue";
@@ -45,6 +45,7 @@ onMounted(() => {
                 id: 'noice'
             });
     }
+    // shuffle();
 });
 
 const assign = async (song: ISong) => {
@@ -53,10 +54,11 @@ const assign = async (song: ISong) => {
     state.song = song;
     console.log(state.song);
     axios.get(`http://localhost:5000/convert/${song.id}`).then(() => {
-        state.audio.src = 'localhost:5000/vidd.mp4';
+        state.audio.src = 'http://localhost:5000/vidd.mp4';
     });
     loadsong();
     state.hassong = true;
+    toggle();
 }
 </script>
 
@@ -104,5 +106,11 @@ button {
     font-size: 1.5em;
     cursor: pointer;
     z-index: 9999;
+}
+
+.playing {
+    background-color: brown;
+    font-weight: bold;
+    color: lime;
 }
 </style>

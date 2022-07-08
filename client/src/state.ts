@@ -8,7 +8,7 @@ export interface ISong {
         seconds: number,
         timestamp: string
     },
-    id:string
+    id: string
 };
 
 export const state = reactive({
@@ -45,10 +45,6 @@ export function loadsong() {
         // state.audio.src = 'http://localhost:5000/vidd.mp4';
         state.audio.src = '/rickrollvid.mp4';
         console.log('loaded');
-        // state.audio.onloadedmetadata = () => {//loaded song details
-        //     // state.progress.max = state.song.duration.seconds.toString();//max ==duration
-        //     // totalt.value = format(Math.round(audio.duration));//label set to max formatted
-        // }
     }
 
 };
@@ -67,20 +63,35 @@ export function format(time: number) {
 };
 
 export function shuffle() {
-
+    const newarr = state.playlist;
+    for (let i = 0; i < newarr.length; ++i) {
+        if (newarr[i] == state.song)
+            continue;
+        const rand = Math.floor(Math.random() * newarr.length);
+        [newarr[i], newarr[rand]] = [newarr[rand], newarr[i]];
+    }
+    state.playlist = newarr;
 };
 
 export function back() {
-
+    reset();
+    state.song = state.playlist[state.playlist.indexOf(state.song) - 1];
+    loadsong();
+    toggle();
 };
 
 export function next() {
-
+    reset();
+    state.song = state.playlist[state.playlist.indexOf(state.song) + 1];
+    loadsong();
+    toggle();
 };
+
 export const reset = () => {
     again();
     state.audio.pause();
 }
 export const remove = (song: ISong) => {
+    state.playlist.splice(state.playlist.indexOf(song), 1);
     state.playlist.splice(state.playlist.indexOf(song), 1);
 }
