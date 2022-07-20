@@ -21,7 +21,8 @@ export const state = reactive({
     search: '',
     currenttime: '',
     loading: false,
-    inplayer: false
+    inplayer: false,
+    firstsongs: true,
 });
 /////////////////////////////////////////////IMPORTANT!!!!!! audio.onmetadataloaded->loading=false;/////////////////////////////////////
 export function toggle() {
@@ -63,17 +64,19 @@ export function format(time: number) {
 };
 
 export function shuffle() {
-    const newarr = state.playlist;
-    for (let i = 0; i < newarr.length; ++i) {
-        if (newarr[i] == state.song)
-            continue;
-        const rand = Math.floor(Math.random() * newarr.length);
-        [newarr[i], newarr[rand]] = [newarr[rand], newarr[i]];
+    // const newarr = state.playlist;
+    for (let i = 0; i < state.playlist.length; ++i) {
+        if (state.playlist[i] != state.song) {
+            const rand = Math.floor(Math.random() * state.playlist.length);
+            [state.playlist[i], state.playlist[rand]] = [state.playlist[rand], state.playlist[i]];
+        }
     }
-    state.playlist = newarr;
+    // state.playlist = newarr;
 };
 
 export function back() {
+    if (state.playlist.indexOf(state.song) == 0)
+        return;
     reset();
     state.song = state.playlist[state.playlist.indexOf(state.song) - 1];
     loadsong();
@@ -81,6 +84,8 @@ export function back() {
 };
 
 export function next() {
+    if (state.playlist.indexOf(state.song) == state.playlist.length - 1)
+        return;
     reset();
     state.song = state.playlist[state.playlist.indexOf(state.song) + 1];
     loadsong();
@@ -92,6 +97,5 @@ export const reset = () => {
     state.audio.pause();
 }
 export const remove = (song: ISong) => {
-    state.playlist.splice(state.playlist.indexOf(song), 1);
     state.playlist.splice(state.playlist.indexOf(song), 1);
 }

@@ -2,7 +2,7 @@
     <div style="overflow:auto;">
         <SearchBar />
         <ul>
-            <li v-for="song in state.playlist" :key="Math.random()">
+            <li v-for="song in state.playlist" :key="song.id">
                 <div @click="assign(song)" class="img"></div>
                 <h2 :class="song == state.song ? 'playing' : ''" @click="assign(song)">{{ song.title }}</h2>
                 <p :class="song == state.song ? 'playing' : ''" @click="assign(song)">{{ song.author }}</p>
@@ -21,29 +21,32 @@ import MiniPlayer from "./MiniPlayer.vue";
 import SearchBar from "./SearchBar.vue";
 
 onMounted(() => {
-    for (let i = 0; i < 8; i++) {
-        if (i % 2 == 0)
-            state.playlist.push({
-                title: 'RICKROLL',
-                author: 'rick',
-                image: 'noice',
-                duration: {
-                    seconds: 212,
-                    timestamp: '3:32'
-                },
-                id: 'rickroll'
-            });
-        else
-            state.playlist.push({
-                title: 'NOICE',
-                author: 'noicer',
-                duration: {
-                    seconds: 69,
-                    timestamp: '1:09'
-                },
-                image: '',
-                id: 'noice'
-            });
+    if (state.firstsongs) {
+        for (let i = 0; i < 8; i++) {
+            if (i % 2 == 0)
+                state.playlist.push({
+                    title: 'RICKROLL',
+                    author: 'rick',
+                    image: 'noice',
+                    duration: {
+                        seconds: 212,
+                        timestamp: '3:32'
+                    },
+                    id: 'dQw4w9wXcQw'
+                });
+            else
+                state.playlist.push({
+                    title: 'NOICE',
+                    author: 'noicer',
+                    duration: {
+                        seconds: 69,
+                        timestamp: '1:09'
+                    },
+                    image: '',
+                    id: 'noice'
+                });
+        }
+        state.firstsongs = false;
     }
     // shuffle();
 });
@@ -59,6 +62,9 @@ const assign = async (song: ISong) => {
     loadsong();
     state.hassong = true;
     toggle();
+
+    const miniplayerbar = document.querySelector('.progress .bar') as HTMLDivElement;
+    miniplayerbar.style.width = '0%';
 }
 </script>
 
@@ -109,8 +115,8 @@ button {
 }
 
 .playing {
-    background-color: brown;
+    /* background-color: brown; */
     font-weight: bold;
-    color: lime;
+    color: rgb(3, 171, 3);
 }
 </style>
