@@ -1,5 +1,5 @@
 // const { createWriteStream, createReadStream, statSync } = require('fs');
-const { Stream } = require('stream');
+const { Stream, Writable, Readable, Duplex } = require('stream');
 const express = require('express');
 const cors = require('cors');
 const yts = require('yt-search');
@@ -52,23 +52,28 @@ app.get('/convert/:id', async (req, res) => {
     //     res.end();
     // });
 
-    const stream = new Stream();
-    ytdl(`https://youtube.com/watch?v=${req.params.id}`, { quality: 'highestaudio' }).pipe(stream);
-    let size = 0;
+    // const stream = new Writable();
+    // ytdl(`https://youtube.com/watch?v=${req.params.id}`, { quality: 'highestaudio' }).pipe(stream);
+    // let size = 0;
 
-    stream
-        .on('data', chunk => {
-            size += chunk.size;
-        })
-        .on('finish', () => {
-            res.writeHead(200, {
-                'Accept-Ranges': 'bytes',
-                'Content-Length': size,
-                'Content-Type': 'video/mp4',
-            });
+    // stream
+    //     // .on('data', chunk => {
+    //     //     size += chunk.size;
+    //     // })
+    //     .on('finish', () => {
+    //         // res.writeHead(200, {
+    //         //     'Accept-Ranges': 'bytes',
+    //         //     'Content-Length': size,
+    //         //     'Content-Type': 'video/mp4',
+    //         // });
 
-            stream.pipe(res);
-        });
+    //         // stream.pipe(res);
+    //         // res.end();
+    //         res.send(stream);
+    //     });
+
+
+    ytdl(`https://youtube.com/watch?v=${req.params.id}`, { quality: 'highestaudio' }).pipe(res);
 });
 
 // app.get('/data', (req, res) => {
